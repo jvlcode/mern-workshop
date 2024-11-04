@@ -1,20 +1,19 @@
-// Filename: server.js
-
 const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
+const dotenv = require('dotenv');
+const studentRoutes = require('./routes/studentRoutes');
+
+dotenv.config();
+
 const app = express();
-const PORT = 8000;
+app.use(cors());
+app.use(express.json());
+app.use('/api/students', studentRoutes);
 
-// Define the route to get students
-app.get('/api/students', (req, res) => {
-    const students = [
-        { name: "Logesh", email: "logesh@example.com", age: 20 },
-        { name: "Alice", email: "alice@example.com", age: 22 },
-        { name: "Bob", email: "bob@example.com", age: 21 }
-    ];
-    return res.json(students); // Send the response as JSON
-});
+mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log('MongoDB connected'))
+  .catch(err => console.log(err));
 
-// Start the server
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
